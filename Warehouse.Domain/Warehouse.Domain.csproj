@@ -7,4 +7,20 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Currency\Aggregates\" />
+    <Folder Include="Currency\DomainEvent\" />
+    <Folder Include="Currency\Entities\" />
+    <Folder Include="Currency\Enum\" />
+    <Folder Include="Currency\Interfaces\" />
+    <Folder Include="Currency\Services\" />
+    <Folder Include="Currency\ValueObjects\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions" Version="3.6.0" />
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
+    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+  </ItemGroup>
+
 </Project>
