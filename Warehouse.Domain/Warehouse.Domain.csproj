@@ -8,13 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Currency\Aggregates\" />
     <Folder Include="Currency\DomainEvent\" />
-    <Folder Include="Currency\Entities\" />
-    <Folder Include="Currency\Enum\" />
     <Folder Include="Currency\Interfaces\" />
     <Folder Include="Currency\Services\" />
-    <Folder Include="Currency\ValueObjects\" />
   </ItemGroup>
 
   <ItemGroup>
