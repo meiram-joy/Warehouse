@@ -34,16 +34,34 @@ public class OutboundDocument : AggregateRoot
         return  Result.Success(new OutboundDocument(id, outboundDocumentNumber, date, status));
     }
     
-    public void AddItem(Guid resourceId, Guid unitOfMeasurementId, Quantity quantity,Guid outboundResourceId)
+    public Result AddItem(Guid resourceId, Guid unitOfMeasurementId, Quantity quantity,Guid outboundResourceId)
     {
         _items.Add(new OutboundResource(outboundResourceId,resourceId, unitOfMeasurementId, quantity));
+        return Result.Success();
     }
     
-    public void Sign()
+    public Result Sign()
     {
-        if (!_items.Any()) throw new InvalidOperationException("Cannot sign empty document");
+        if (!_items.Any())
+            return Result.Failure("Cannot sign an empty document");
+
+        if (Status == ShipmentStatus.Signed)
+            return Result.Failure("Document is already signed");
+
+        if (Status == ShipmentStatus.Revoked)
+            return Result.Failure("Cannot sign a revoked document");
+        
         Status = ShipmentStatus.Signed;
+        return Result.Success("Document signed successfully");
     }
     
-    public void Revoke() => Status = ShipmentStatus.Revoked;
+    
+    public Result Revoke()
+    {
+        if (Status != ShipmentStatus.Signed)
+            return Result.Failure("Only signed documents can be revoked");
+        
+        Status = ShipmentStatus.Revoked;
+        return Result.Success("Document revoked successfully"); 
+    }
 }

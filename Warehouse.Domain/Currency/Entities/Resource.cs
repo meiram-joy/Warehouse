@@ -4,7 +4,7 @@ using Entity = Warehouse.Domain.Common.Entity;
 
 namespace Warehouse.Domain.Currency.Entities;
 
-public class Resource : Entity
+public sealed class Resource : Entity
 {
     public string ResourceName { get; private set; }
     public EntityStatus Status { get; private set; }

@@ -4,7 +4,7 @@ using Entity = Warehouse.Domain.Common.Entity;
 
 namespace Warehouse.Domain.Currency.Entities;
 
-public class UnitOfMeasurement : Entity
+public sealed class UnitOfMeasurement : Entity
 {
     public string UnitName { get; private set; }
     public EntityStatus Status { get; private set; }

@@ -4,7 +4,7 @@ using Entity = Warehouse.Domain.Common.Entity;
 
 namespace Warehouse.Domain.Currency.Entities;
 
-public class Balance : Entity
+public sealed class Balance : Entity
 {
     public Quantity Quantity { get; private set; }
     public Guid ResourceId { get; private set; }
@@ -12,20 +12,20 @@ public class Balance : Entity
     
     private Balance(Guid resourceId, Guid unitOfMeasurementId, Quantity quantity)
     {
+        if (resourceId == Guid.Empty)
+            Result.Failure("Resource id cannot be empty");
+        if (unitOfMeasurementId == Guid.Empty)
+            Result.Failure("Unit of measurement id cannot be empty");
+        if (quantity == null)
+            Result.Failure("Quantity cannot be null");
+        
         ResourceId = resourceId;
         UnitOfMeasurementId = unitOfMeasurementId;
         Quantity = quantity;
     }
     public static Result<Balance> Create(Guid resourceId, Guid unitOfMeasurementId, Quantity quantity)
     {
-        if (resourceId == Guid.Empty)
-           Result.Failure("Resource id cannot be empty");
-        if (unitOfMeasurementId == Guid.Empty)
-            Result.Failure("Unit of measurement id cannot be empty");
-        if (quantity == null)
-            Result.Failure("Quantity cannot be null");
-        
-        return new Balance(resourceId, unitOfMeasurementId, quantity);
+        return Result.Success(new Balance(resourceId, unitOfMeasurementId, quantity));
     }
 
     public void Increase(Quantity qty) => Quantity += qty;

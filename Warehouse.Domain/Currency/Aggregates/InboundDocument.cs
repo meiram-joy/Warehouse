@@ -21,9 +21,9 @@ public class InboundDocument : AggregateRoot
         InboundDocumentNumber = inboundDocumentNumber;
         Date = date;
     }
-    public static InboundDocument Create(Guid id, string inboundDocumentNumber, DateTime date)
+    public static Result<InboundDocument> Create(Guid id, string inboundDocumentNumber, DateTime date)
     {
-        return new InboundDocument(id, inboundDocumentNumber, date);
+        return  Result.Success(new InboundDocument(id, inboundDocumentNumber, date));
     }
     public Result AddItem(Guid resourceId, Guid unitId, Balance quantity)
     {
