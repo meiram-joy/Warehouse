@@ -14,7 +14,7 @@ public class SqliteDbConnectionFactory : IDbConnectionFactory
         _connectionString = configuration.GetConnectionString("DefaultConnection")!;
     }
     
-    public IDbConnection CreateConnection()
+    public SqliteConnection CreateConnection()
     {
         return new SqliteConnection(_connectionString);
     }

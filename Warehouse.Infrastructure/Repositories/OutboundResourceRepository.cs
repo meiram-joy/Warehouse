@@ -12,27 +12,27 @@ public class OutboundResourceRepository : IOutboundResourceRepository
         _connectionFactory = connectionFactory;
     }
 
-    public Task<OutboundResource?> GetByIdAsync(Guid id)
+    public Task<OutboundResource?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<OutboundResource>> GetAllAsync()
+    public Task<IEnumerable<OutboundResource>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddAsync(OutboundResource resource)
+    public Task AddAsync(OutboundResource resource, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateAsync(OutboundResource resource)
+    public Task UpdateAsync(OutboundResource resource, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

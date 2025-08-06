@@ -12,27 +12,27 @@ public class MeasurementUnitRepository : IMeasurementUnitRepository
         _connectionFactory = connectionFactory;
     }
 
-    public Task<UnitOfMeasurement?> GetByIdAsync(Guid id)
+    public Task<UnitOfMeasurement?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<UnitOfMeasurement>> GetAllAsync()
+    public Task<IEnumerable<UnitOfMeasurement>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddAsync(UnitOfMeasurement unit)
+    public Task AddAsync(UnitOfMeasurement unit, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateAsync(UnitOfMeasurement unit)
+    public Task UpdateAsync(UnitOfMeasurement unit, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

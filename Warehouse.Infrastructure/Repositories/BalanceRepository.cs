@@ -1,4 +1,5 @@
-﻿using Warehouse.Domain.Currency.Entities;
+﻿using Dapper;
+using Warehouse.Domain.Currency.Entities;
 using Warehouse.Domain.Currency.Interfaces;
 
 namespace Warehouse.Infrastructure.Repositories;
@@ -12,28 +13,34 @@ public class BalanceRepository : IBalanceRepository
         _connectionFactory = connectionFactory;
     }
     
-    public Task<Balance?> GetByIdAsync(Guid id)
+    public async Task<Balance?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
-        throw new NotImplementedException();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"SELECT * FROM Balances WHERE Id = @Id";
+        var balance = await connection.QuerySingleOrDefaultAsync<Balance>(sql, new { Id = id });
+        if (balance == null) return null;
+        
+        return balance;
     }
 
-    public Task<IEnumerable<Balance>> GetAllAsync()
+    public Task<IEnumerable<Balance>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddAsync(Balance balance)
+    public Task AddAsync(Balance balance, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateAsync(Balance balance)
+    public Task UpdateAsync(Balance balance, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

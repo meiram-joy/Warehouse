@@ -11,28 +11,28 @@ public class InboundDocumentRepository : IInboundDocumentRepository
     {
         _connectionFactory = connectionFactory;
     }
-
-    public Task<InboundDocument?> GetByIdAsync(Guid id)
+    
+    public Task<InboundDocument?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<InboundDocument>> GetAllAsync()
+    public Task<IEnumerable<InboundDocument>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddAsync(InboundDocument document)
+    public Task AddAsync(InboundDocument document, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateAsync(InboundDocument document)
+    public Task UpdateAsync(InboundDocument document, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

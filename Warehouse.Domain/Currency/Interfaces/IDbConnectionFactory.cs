@@ -1,8 +1,8 @@
-﻿using System.Data;
+﻿using Microsoft.Data.Sqlite;
 
 namespace Warehouse.Domain.Currency.Interfaces;
 
 public interface IDbConnectionFactory
 {
-    IDbConnection CreateConnection();
+    SqliteConnection CreateConnection();
 }

@@ -12,27 +12,27 @@ public class OutboundDocumentRepository : IOutboundDocumentRepository
         _connectionFactory = connectionFactory;
     }
 
-    public Task<OutboundDocument?> GetByIdAsync(Guid id)
+    public Task<OutboundDocument?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<OutboundDocument>> GetAllAsync()
+    public Task<IEnumerable<OutboundDocument>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddAsync(OutboundDocument document)
+    public Task AddAsync(OutboundDocument document, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateAsync(OutboundDocument document)
+    public Task UpdateAsync(OutboundDocument document, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

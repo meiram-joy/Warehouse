@@ -11,27 +11,28 @@ public class ClientRepository : IClientRepository
     {
         _connectionFactory = connectionFactory;
     }
-    public Task<Client?> GetByIdAsync(Guid id)
+
+    public Task<Client?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<Client>> GetAllAsync()
+    public Task<IEnumerable<Client>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task AddAsync(Client client)
+    public Task AddAsync(Client client, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task UpdateAsync(Client client)
+    public Task UpdateAsync(Client client, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeleteAsync(Guid id)
+    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

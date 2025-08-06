@@ -4,9 +4,9 @@ namespace Warehouse.Domain.Currency.Interfaces;
 
 public interface IOutboundResourceRepository
 {
-    Task<OutboundResource?> GetByIdAsync(Guid id);
-    Task<IEnumerable<OutboundResource>> GetAllAsync();
-    Task AddAsync(OutboundResource resource);
-    Task UpdateAsync(OutboundResource resource);
-    Task DeleteAsync(Guid id);
+    Task<OutboundResource?> GetByIdAsync(Guid id,CancellationToken cancellationToken = default);
+    Task<IEnumerable<OutboundResource>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task AddAsync(OutboundResource resource,CancellationToken cancellationToken = default);
+    Task UpdateAsync(OutboundResource resource,CancellationToken cancellationToken = default);
+    Task DeleteAsync(Guid id,CancellationToken cancellationToken = default);
 }
