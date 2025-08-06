@@ -1,11 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using MediatR;
+using Warehouse.Application.DTOs;
 
 namespace Warehouse.Application.Commands;
 
-public class CreateOutboundDocumentCommandHandler : IRequestHandler<CreateOutboundDocumentCommand, Result>
+public class CreateOutboundDocumentCommandHandler : IRequestHandler<CreateOutboundDocumentCommand, Result<OutboundDocumentInputDto>>
 {
-    public Task<Result> Handle(CreateOutboundDocumentCommand request, CancellationToken cancellationToken)
+    public Task<Result<OutboundDocumentInputDto>> Handle(CreateOutboundDocumentCommand request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
