@@ -1,5 +1,6 @@
 using Warehouse.Domain.Currency.Interfaces;
 using Warehouse.Infrastructure;
+using Warehouse.Infrastructure.Mappings;
 using Warehouse.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);

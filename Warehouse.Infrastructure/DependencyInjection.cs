@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Warehouse.Domain.Currency.Interfaces;
+using Warehouse.Infrastructure.Mappings;
 using Warehouse.Infrastructure.Repositories;
 
 namespace Warehouse.Infrastructure;
