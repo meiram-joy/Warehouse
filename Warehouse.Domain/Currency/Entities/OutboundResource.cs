@@ -28,9 +28,4 @@ public sealed class OutboundResource : Entity
         UnitOfMeasurementId = unitOfMeasurementId;
         Quantity = quantity;
     }
-
-    public static Result<OutboundResource> Create(Guid id, Guid resourceId, Guid unitId, Quantity quantity)
-    {
-        return Result.Success(new OutboundResource(id, resourceId, unitId, quantity));
-    }
 }

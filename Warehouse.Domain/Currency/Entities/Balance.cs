@@ -16,9 +16,7 @@ public sealed class Balance : Entity
             Result.Failure("Resource id cannot be empty");
         if (unitOfMeasurementId == Guid.Empty)
             Result.Failure("Unit of measurement id cannot be empty");
-        if (quantity == null)
-            Result.Failure("Quantity cannot be null");
-        
+
         ResourceId = resourceId;
         UnitOfMeasurementId = unitOfMeasurementId;
         Quantity = quantity;

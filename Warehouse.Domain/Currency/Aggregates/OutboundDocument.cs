@@ -19,11 +19,9 @@ public class OutboundDocument : AggregateRoot
     {
         if (outboundDocumentNumber == null)
             throw new ArgumentNullException(nameof(outboundDocumentNumber), "Outbound document number cannot be null.");
-        if (date == null)
+        if (date == default)
             throw new ArgumentNullException(nameof(date), "Date cannot be null.");
-        if (status == null)
-            throw new ArgumentNullException(nameof(status), "Status cannot be null.");
-        
+
         OutboundDocumentNumber = outboundDocumentNumber;
         Date = date;
         Status = status;
