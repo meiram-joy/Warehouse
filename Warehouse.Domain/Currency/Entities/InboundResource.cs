@@ -1,6 +1,5 @@
-﻿
-
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
+using Warehouse.Domain.Currency.ValueObjects;
 using Entity = Warehouse.Domain.Common.Entity;
 
 namespace Warehouse.Domain.Currency.Entities;
@@ -9,11 +8,10 @@ public sealed class InboundResource : Entity
 {
     public Guid ResourceId { get; private set; }
     public Guid UnitOfMeasurementId { get; private set; }
-    public Balance Balance { get; private set; }
+    public Quantity Quantity { get; private set; }
     
-    //Todo : Кажется я перепутал местами InboundResource c InboundDocument 
 
-    internal InboundResource(Guid resourceId, Guid unitOfMeasurementId, Balance balance)
+    internal InboundResource(Guid resourceId, Guid unitOfMeasurementId, Quantity quantity)
     {
         if (resourceId == Guid.Empty)
             throw new ArgumentException("Resource ID cannot be empty.");
@@ -21,16 +19,15 @@ public sealed class InboundResource : Entity
         if (unitOfMeasurementId == Guid.Empty)
             throw new ArgumentException("Unit of Measurement ID cannot be empty.");
 
-        if (balance == null)
+        if (quantity == null)
             throw new ArgumentException("Inventory Balance cannot be null.");
         
         ResourceId = resourceId;
         UnitOfMeasurementId = unitOfMeasurementId;
-        Balance = balance;
+        Quantity = quantity;
     }
-    public static Result<InboundResource> Create(Guid resourceId, Guid unitOfMeasurementId, Balance balance)
+    public static Result<InboundResource> Create(Guid resourceId, Guid unitOfMeasurementId, Quantity quantity)
     {
-        return Result.Success(new InboundResource(resourceId, unitOfMeasurementId, balance));
+        return Result.Success(new InboundResource(resourceId, unitOfMeasurementId, quantity));
     }
-    public void UpdatenewInventoryBalance(Balance newinventoryBalance) => Balance = newinventoryBalance;
 }

@@ -7,7 +7,7 @@ namespace Warehouse.Domain.Currency.Entities;
 public sealed class OutboundResource : Entity
 {
     public Guid ResourceId { get; private set; }
-    public Guid UnitId { get; private set; }
+    public Guid UnitOfMeasurementId { get; private set; }
     public Quantity Quantity { get; private set; }
 
     internal OutboundResource(Guid id,Guid resourceId, Guid unitOfMeasurementId, Quantity quantity)
@@ -25,7 +25,7 @@ public sealed class OutboundResource : Entity
         
         ID = id;
         ResourceId = resourceId;
-        UnitId = unitOfMeasurementId;
+        UnitOfMeasurementId = unitOfMeasurementId;
         Quantity = quantity;
     }
 

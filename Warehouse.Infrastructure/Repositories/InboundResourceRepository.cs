@@ -1,4 +1,5 @@
-﻿using Warehouse.Domain.Currency.Entities;
+﻿using Dapper;
+using Warehouse.Domain.Currency.Entities;
 using Warehouse.Domain.Currency.Interfaces;
 
 namespace Warehouse.Infrastructure.Repositories;
@@ -10,30 +11,92 @@ public class InboundResourceRepository : IInboundResourceRepository
     public InboundResourceRepository(IDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
+        EnsureTableCreated();
     }
 
-    public Task<InboundResource?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<InboundResource?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"SELECT * FROM InboundResource WHERE Id = @Id";
+        var inboundResource = await connection.QuerySingleOrDefaultAsync<InboundResource>(sql, new { Id = id });
+        if (inboundResource == null) return null;
+        
+        return inboundResource;
     }
 
-    public Task<IEnumerable<InboundResource>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<InboundResource>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"SELECT * FROM InboundResource";
+        var inboundResource = await connection.QueryAsync<InboundResource>(sql);
+        return inboundResource;
     }
 
-    public Task AddAsync(InboundResource resource, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Guid inboundDocumentId,InboundResource resource, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"INSERT INTO InboundResource (Id,InboundDocumentId, ResourceId, UnitOfMeasurementId, Quantity) 
+                             VALUES (@Id, @InboundDocumentId, @ResourceId, @UnitOfMeasurementId, @Quantity)";
+        await connection.ExecuteAsync(sql, new
+        {
+            Id = resource.ID,
+            InboundDocumentId = inboundDocumentId,
+            ResourceId = resource.ResourceId,
+            UnitOfMeasurementId = resource.UnitOfMeasurementId,
+            Quantity = resource.Quantity
+        });
     }
 
-    public Task UpdateAsync(InboundResource resource, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Guid inboundDocumentId,InboundResource resource, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"UPDATE InboundResource 
+                             SET ResourceId = @ResourceId, InboundDocumentId = @InboundDocumentId ,UnitOfMeasurementId = @UnitOfMeasurementId, Quantity = @Quantity 
+                             WHERE Id = @Id";
+        await connection.ExecuteAsync(sql, new
+        {
+            Id = resource.ID,
+            InboundDocumentId = inboundDocumentId,
+            ResourceId = resource.ResourceId,
+            UnitOfMeasurementId = resource.UnitOfMeasurementId,
+            Quantity = resource.Quantity
+        });
     }
 
-    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"DELETE FROM InboundResource WHERE Id = @Id";
+        await connection.ExecuteAsync(sql, new { Id = id });
+    }
+    private void EnsureTableCreated()
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        connection.Open();
+        var createTableSql = @"
+            CREATE TABLE IF NOT EXISTS InboundResources (
+            Id TEXT PRIMARY KEY,
+            InboundDocumentId TEXT NOT NULL,
+            ResourceId TEXT NOT NULL,
+            UnitOfMeasurementId TEXT NOT NULL,
+            Quantity DECIMAL(18,4) NOT NULL,
+            FOREIGN KEY (InboundDocumentId) REFERENCES InboundDocument(Id),
+            FOREIGN KEY (ResourceId) REFERENCES Resource(Id),
+            FOREIGN KEY (UnitOfMeasurementId) REFERENCES UnitOfMeasurement(Id)
+        );
+        ";
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = createTableSql;
+        cmd.ExecuteNonQuery();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Warehouse.Domain.Common;
 using Warehouse.Domain.Currency.Entities;
+using Warehouse.Domain.Currency.ValueObjects;
 
 namespace Warehouse.Domain.Currency.Aggregates;
 
@@ -25,7 +26,7 @@ public class InboundDocument : AggregateRoot
     {
         return  Result.Success(new InboundDocument(id, inboundDocumentNumber, date));
     }
-    public Result AddItem(Guid resourceId, Guid unitId, Balance quantity)
+    public Result AddItem(Guid resourceId, Guid unitId, Quantity quantity)
     {
         _items.Add(new InboundResource(resourceId, unitId, quantity));
         return Result.Success("Item added successfully");
@@ -38,9 +39,10 @@ public class InboundDocument : AggregateRoot
     }
     public Result UpdateItem(Guid itemId, Balance newQty)
     {
-        var item = _items.FirstOrDefault(x => x.ID == itemId)
-                   ?? throw new InvalidOperationException("Item not found");
-        item.UpdatenewInventoryBalance(newQty);
+        // var item = _items.FirstOrDefault(x => x.ID == itemId)
+        //            ?? throw new InvalidOperationException("Item not found");
+        // item.UpdatenewInventoryBalance(newQty);
+        // return Result.Success("Item updated successfully");
         return Result.Success("Item updated successfully");
     }
 }

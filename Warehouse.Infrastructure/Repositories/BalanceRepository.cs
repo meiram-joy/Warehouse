@@ -1,4 +1,6 @@
 ﻿using Dapper;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Configuration;
 using Warehouse.Domain.Currency.Entities;
 using Warehouse.Domain.Currency.Interfaces;
 
@@ -11,6 +13,7 @@ public class BalanceRepository : IBalanceRepository
     public BalanceRepository(IDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
+        EnsureTableCreated();
     }
     
     public async Task<Balance?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -25,23 +28,73 @@ public class BalanceRepository : IBalanceRepository
         return balance;
     }
 
-    public Task<IEnumerable<Balance>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Balance>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"SELECT * FROM Balances";
+        var balances = await connection.QueryAsync<Balance>(sql);
+        return balances;
     }
 
-    public Task AddAsync(Balance balance, CancellationToken cancellationToken = default)
+    public async Task AddAsync(Balance balance, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"INSERT INTO Balances (Id, ResourceId, UnitOfMeasurementId, Quantity) 
+                             VALUES (@Id, @ResourceId, @UnitOfMeasurementId, @Quantity)";
+        await connection.ExecuteAsync(sql, new
+        {
+            Id = balance.ID,
+            ResourceId = balance.ResourceId,
+            UnitOfMeasurementId = balance.UnitOfMeasurementId,
+            Quantity = balance.Quantity
+        });
     }
 
-    public Task UpdateAsync(Balance balance, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(Balance balance, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"UPDATE Balances 
+                             SET ResourceId = @ResourceId, UnitOfMeasurementId = @UnitOfMeasurementId, Quantity = @Quantity 
+                             WHERE Id = @Id";
+        await connection.ExecuteAsync(sql, new
+        {
+            Id = balance.ID,
+            ResourceId = balance.ResourceId,
+            UnitOfMeasurementId = balance.UnitOfMeasurementId,
+            Quantity = balance.Quantity
+        });
     }
 
-    public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"DELETE FROM Balances WHERE Id = @Id";
+        await connection.ExecuteAsync(sql, new { Id = id });
+    }
+    private void EnsureTableCreated()
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        connection.Open();
+        var createTableSql = @"
+            CREATE TABLE IF NOT EXISTS Balances (
+            Id TEXT PRIMARY KEY,
+            Quantity DECIMAL(18, 4) NOT NULL,
+            ResourceId TEXT NOT NULL,
+            UnitOfMeasurementId TEXT NOT NULL,
+            FOREIGN KEY (ResourceId) REFERENCES Resource(Id),
+            FOREIGN KEY (UnitOfMeasurementId) REFERENCES UnitOfMeasurement(Id)
+            );
+        ";
+        using var cmd = connection.CreateCommand();
+        cmd.CommandText = createTableSql;
+        cmd.ExecuteNonQuery();
     }
 }
