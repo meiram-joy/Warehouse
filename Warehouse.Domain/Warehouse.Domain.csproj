@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Currency\DomainEvent\" />
-    <Folder Include="Currency\Services\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Warehouse.Application.Commands;
 
-public record SignOutboundDocumentCommand(Guid DocumentId) : IRequest<Result>;
+public record CreateResourceCommand(string resourceName) : IRequest<Result>;
