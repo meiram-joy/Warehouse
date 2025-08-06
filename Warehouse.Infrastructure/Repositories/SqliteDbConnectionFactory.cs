@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Warehouse.Domain.Currency.Interfaces;
 

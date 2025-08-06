@@ -1,6 +1,4 @@
 ﻿using Dapper;
-using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Configuration;
 using Warehouse.Domain.Currency.Entities;
 using Warehouse.Domain.Currency.Interfaces;
 
