@@ -4,4 +4,4 @@ using Warehouse.Application.DTOs;
 
 namespace Warehouse.Application.Commands.InboundDocument;
 
-public record CreateInboundDocumentCommand(InboundDocumentInputDto Request) : IRequest<Result<InboundDocumentOutputDto>>;
+public record CreateInboundDocumentCommand(InboundDocumentInputDto InboundDocument) : IRequest<Result<InboundDocumentOutputDto>>;

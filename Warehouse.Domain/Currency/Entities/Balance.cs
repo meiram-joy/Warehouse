@@ -20,6 +20,7 @@ public sealed class Balance : Entity
         ResourceId = resourceId;
         UnitOfMeasurementId = unitOfMeasurementId;
         Quantity = quantity;
+        ID = Guid.NewGuid();
     }
     public static Result<Balance> Create(Guid resourceId, Guid unitOfMeasurementId, Quantity quantity)
     {

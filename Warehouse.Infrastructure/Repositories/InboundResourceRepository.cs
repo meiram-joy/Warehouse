@@ -14,13 +14,13 @@ public class InboundResourceRepository : IInboundResourceRepository
         EnsureTableCreated();
     }
 
-    public async Task<InboundResource?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<InboundResource?> GetByInboundDocumentIdAsync(Guid inboundDocumentId, CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
         await connection.OpenAsync(cancellationToken);
         
-        const string sql = @"SELECT * FROM InboundResource WHERE Id = @Id";
-        var inboundResource = await connection.QuerySingleOrDefaultAsync<InboundResource>(sql, new { Id = id });
+        const string sql = @"SELECT * FROM InboundResource WHERE InboundDocumentId = @InboundDocumentId";
+        var inboundResource = await connection.QuerySingleOrDefaultAsync<InboundResource>(sql, new { InboundDocumentId = inboundDocumentId });
         if (inboundResource == null) return null;
         
         return inboundResource;

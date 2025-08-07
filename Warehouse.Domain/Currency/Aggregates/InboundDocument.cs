@@ -12,7 +12,7 @@ public class InboundDocument : AggregateRoot
     private readonly List<InboundResource> _items = new();
     public IReadOnlyCollection<InboundResource> Items => _items.AsReadOnly();
     
-    private InboundDocument(Guid id,string inboundDocumentNumber, DateTime date) : base(id)
+    private InboundDocument(string inboundDocumentNumber, DateTime date) : base(Guid.NewGuid())
     {
         if (string.IsNullOrWhiteSpace(inboundDocumentNumber))
             throw new ArgumentException("Inbound document number cannot be null or empty", nameof(inboundDocumentNumber));
@@ -22,18 +22,18 @@ public class InboundDocument : AggregateRoot
         InboundDocumentNumber = inboundDocumentNumber;
         Date = date;
     }
-    public static Result<InboundDocument> Create(Guid id, string inboundDocumentNumber, DateTime date)
+    public static InboundDocument Create(string inboundDocumentNumber, DateTime date)
     {
-        return  Result.Success(new InboundDocument(id, inboundDocumentNumber, date));
+        return  new InboundDocument(inboundDocumentNumber, date);
     }
-    public Result AddItem(Guid resourceId, Guid unitId, Quantity quantity)
+    public  Result  AddItem(Guid resourceId, Guid unitId, Quantity quantity)
     {
         _items.Add(new InboundResource(resourceId, unitId, quantity));
         return Result.Success("Item added successfully");
     }
-    public Result RemoveItem(Guid itemId)
+    public Result RemoveItem(Guid resourceId)
     {
-        var item = _items.FirstOrDefault(x => x.ID == itemId);
+        var item = _items.FirstOrDefault(x => x.ID == resourceId);
         if (item != null) _items.Remove(item);
         return Result.Success("Item removed successfully");
     }

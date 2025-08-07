@@ -26,6 +26,18 @@ public class InboundDocumentRepository : IInboundDocumentRepository
         return document;
     }
 
+    public async Task<InboundDocument?> GetByDocumentNumberAsync(string documentNumber, CancellationToken cancellationToken = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"SELECT * FROM InboundDocument WHERE InboundDocumentNumber = @InboundDocumentNumber";
+        var document = await connection.QuerySingleOrDefaultAsync<InboundDocument>(sql, new { InboundDocumentNumber = documentNumber });
+        if (document == null) return null;
+        
+        return document;
+    }
+
     public async Task<IEnumerable<InboundDocument>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
