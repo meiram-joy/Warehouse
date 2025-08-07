@@ -26,6 +26,18 @@ public class MeasurementUnitRepository : IMeasurementUnitRepository
         return unit;
     }
 
+    public async Task<UnitOfMeasurement?> GetByNameAsync(string unitName, CancellationToken cancellationToken = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"SELECT * FROM UnitOfMeasurement WHERE UnitName = @UnitName";
+        var unit = await connection.QuerySingleOrDefaultAsync<UnitOfMeasurement>(sql, new { UnitName = unitName });
+        if (unit == null) return null;
+        
+        return unit;
+    }
+
     public async Task<IEnumerable<UnitOfMeasurement>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
@@ -75,7 +87,24 @@ public class MeasurementUnitRepository : IMeasurementUnitRepository
         const string sql = @"DELETE FROM UnitOfMeasurement WHERE Id = @Id";
         await connection.ExecuteAsync(sql, new { Id = id });
     }
-    
+
+    public async Task<bool> IsClientUsedAsync(Guid unitId, CancellationToken cancellationToken = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"
+        SELECT 1 FROM Balance WHERE UnitOfMeasurementId = @UnitOfMeasurementId LIMIT 1
+        UNION
+        SELECT 1 FROM InboundResources WHERE UnitOfMeasurementId = @UnitOfMeasurementId LIMIT 1
+        UNION
+        SELECT 1 FROM OutboundResource WHERE UnitOfMeasurementId = @UnitOfMeasurementId LIMIT 1
+        LIMIT 1";
+        
+        var result = await connection.QueryFirstOrDefaultAsync<int?>(sql, new { UnitOfMeasurementId = unitId });
+        return result.HasValue;
+    }
+
     private void EnsureTableCreated()
     {
         using var connection = _connectionFactory.CreateConnection();

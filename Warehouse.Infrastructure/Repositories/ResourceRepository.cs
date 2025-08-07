@@ -26,6 +26,18 @@ public class ResourceRepository : IResourceRepository
         return resource;
     }
 
+    public async Task<Resource?> GetByNameAsync(string resourceName, CancellationToken cancellationToken = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"SELECT * FROM Resource WHERE ResourceName = @ResourceName";
+        var resource = await connection.QuerySingleOrDefaultAsync<Resource>(sql, new { ResourceName = resourceName });
+        if (resource == null) return null;
+        
+        return resource;
+    }
+
     public async Task<IEnumerable<Resource>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
@@ -75,6 +87,23 @@ public class ResourceRepository : IResourceRepository
         const string sql = @"DELETE FROM Resource WHERE Id = @Id";
         await connection.ExecuteAsync(sql, new { Id = id });
     }
+
+    public async Task<bool> IsClientUsedAsync(Guid resourceId, CancellationToken cancellationToken = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"
+        SELECT 1 FROM Balance WHERE ResourceId = @ResourceId LIMIT 1
+        UNION
+        SELECT 1 FROM InboundResources WHERE ResourceId = @ResourceId LIMIT 1
+        UNION
+        SELECT 1 FROM OutboundResource WHERE ResourceId = @ResourceId LIMIT 1
+        LIMIT 1";
+        var result = await connection.QueryFirstOrDefaultAsync<int?>(sql, new { ResourceId = resourceId });
+        return result.HasValue;
+    }
+
     private void EnsureTableCreated()
     {
         using var connection = _connectionFactory.CreateConnection();

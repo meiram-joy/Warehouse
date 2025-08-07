@@ -2,7 +2,7 @@
 using MediatR;
 using Warehouse.Application.DTOs;
 
-namespace Warehouse.Application.Commands;
+namespace Warehouse.Application.Commands.InboundDocument;
 
 public class CreateInboundDocumentHandler : IRequestHandler<CreateInboundDocumentCommand, Result<InboundDocumentOutputDto>>
 {

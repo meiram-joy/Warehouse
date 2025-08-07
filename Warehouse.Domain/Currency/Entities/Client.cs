@@ -10,27 +10,34 @@ public sealed class Client : Entity
     public string Address { get; private set; }
     public EntityStatus Status { get; private set; }
     
-    private Client(Guid id,string clientName, EntityStatus status,string address)
+    private Client(string clientName,string address)
     {
         if (string.IsNullOrWhiteSpace(clientName))
             throw new ArgumentException("Resource name cannot be null or empty.", nameof(clientName));
-        if (id == Guid.Empty)
-            throw new ArgumentException("ID cannot be an empty Guid.", nameof(id));
         if (string.IsNullOrWhiteSpace(address))
             throw new ArgumentException("Address cannot be null or empty.", nameof(address));
         
-        ID = id;
+        ID = Guid.NewGuid();
         ClientName = clientName;
         Address = address;
-        Status = status;
     }
-    public static Result<Client> Create(Guid id,string clientName, EntityStatus status,string address)
+    public static Client Create(string clientName,string address)
     {
-        return Result.Success(new Client(id, clientName, status, address));
+        return new Client(clientName, address);
+    }
+    
+    public static Client Update(string clientName,string address)
+    {
+        return new Client(clientName, address);
     }
     public Result Archive()
     {
         Status = EntityStatus.Archived;
+        return Result.Success();
+    }
+    public Result Active()
+    {
+        Status = EntityStatus.Active;
         return Result.Success();
     }
 }

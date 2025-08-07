@@ -14,26 +14,33 @@ public class BalanceRepository : IBalanceRepository
         EnsureTableCreated();
     }
     
-    public async Task<Balance?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Balance?> GetByResourceIdAndUnitIdAsync(Guid resourceId,Guid unitId,CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
         await connection.OpenAsync(cancellationToken);
         
-        const string sql = @"SELECT * FROM Balances WHERE Id = @Id";
-        var balance = await connection.QuerySingleOrDefaultAsync<Balance>(sql, new { Id = id });
+        const string sql = @"SELECT * FROM Balances WHERE ResourceId = @ResourceId AND UnitOfMeasurementId = @UnitId";
+        var balance = await connection.QuerySingleOrDefaultAsync<Balance>(sql, new { ResourceId = resourceId, UnitOfMeasurementId = unitId });
         if (balance == null) return null;
         
         return balance;
     }
 
-    public async Task<IEnumerable<Balance>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Balance>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
         await connection.OpenAsync(cancellationToken);
         
         const string sql = @"SELECT * FROM Balances";
         var balances = await connection.QueryAsync<Balance>(sql);
-        return balances;
+        return balances
+            .Select(r =>
+                Balance.Create(
+                    r.ResourceId,
+                    r.UnitOfMeasurementId,
+                    r.Quantity
+                ).Value
+            ).ToList();
     }
 
     public async Task AddAsync(Balance balance, CancellationToken cancellationToken = default)

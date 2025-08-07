@@ -9,25 +9,32 @@ public sealed class UnitOfMeasurement : Entity
     public string UnitName { get; private set; }
     public EntityStatus Status { get; private set; }
     
-    private UnitOfMeasurement(Guid id,string unitName, EntityStatus status)
-    {
-        UnitName = unitName;
-        Status = status;
-        ID = id;
-    }
-    public static UnitOfMeasurement Create(Guid id,string unitName, EntityStatus status)
+    private UnitOfMeasurement(string unitName)
     {
         if (string.IsNullOrWhiteSpace(unitName))
             throw new ArgumentException("Resource name cannot be null or empty.", nameof(unitName));
-        if (id == Guid.Empty)
-            throw new ArgumentException("ID cannot be an empty Guid.", nameof(id));
         
-        return new UnitOfMeasurement(id,unitName, status);
+        UnitName = unitName;
+        ID = Guid.NewGuid();
+    }
+    public static UnitOfMeasurement Create(string unitName)
+    {
+        return new UnitOfMeasurement(unitName);
+    }
+    
+    public static UnitOfMeasurement Update(string unitName)
+    {
+        return new UnitOfMeasurement(unitName);
     }
     
     public Result Archive()
     {
         Status = EntityStatus.Archived;
+        return Result.Success();
+    }
+    public Result Active()
+    {
+        Status = EntityStatus.Active;
         return Result.Success();
     }
 }

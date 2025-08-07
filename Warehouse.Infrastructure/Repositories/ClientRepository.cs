@@ -11,15 +11,28 @@ public class ClientRepository : IClientRepository
     public ClientRepository(IDbConnectionFactory connectionFactory)
     {
         _connectionFactory = connectionFactory;
+        EnsureTableCreated();
     }
 
-    public async Task<Client?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Client?> GetByNameAndAddressAsync(string clientName,string address,CancellationToken cancellationToken = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"SELECT * FROM Client WHERE ClientName = @ClientName AND Address = @Address";
+        var client = await connection.QuerySingleOrDefaultAsync<Client>(sql, new { ClientName = clientName, Address = address });
+        if (client == null) return null;
+        
+        return client;
+    }
+
+    public async Task<Client?> GetByIdAsync(Guid Id, CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
         await connection.OpenAsync(cancellationToken);
         
         const string sql = @"SELECT * FROM Client WHERE Id = @Id";
-        var client = await connection.QuerySingleOrDefaultAsync<Client>(sql, new { Id = id });
+        var client = await connection.QuerySingleOrDefaultAsync<Client>(sql, new { Id });
         if (client == null) return null;
         
         return client;
@@ -76,6 +89,22 @@ public class ClientRepository : IClientRepository
         const string sql = @"DELETE FROM Client WHERE Id = @Id";
         await connection.ExecuteAsync(sql, new { Id = id });
     }
+
+    public async Task<bool> IsClientUsedAsync(Guid clientId,CancellationToken cancellationToken)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        const string sql = @"
+        SELECT 1
+        FROM ReceiptDocuments
+        WHERE ClientId = @ClientId
+        LIMIT 1";
+        
+        var result = await connection.QueryFirstOrDefaultAsync<int?>(sql, new { ClientId = clientId });
+        return result.HasValue;
+    }
+
     private void EnsureTableCreated()
     {
         using var connection = _connectionFactory.CreateConnection();
@@ -85,7 +114,7 @@ public class ClientRepository : IClientRepository
                 Id TEXT PRIMARY KEY,
                 ClientName VARCHAR(50) NOT NULL,
                 Address VARCHAR(100) NOT NULL,
-                Status INTEGER NOT NULL
+                Status INTEGER NULL
             );
         ";
         using var cmd = connection.CreateCommand();

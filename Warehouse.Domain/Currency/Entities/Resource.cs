@@ -8,26 +8,35 @@ public sealed class Resource : Entity
 {
     public string ResourceName { get; private set; }
     public EntityStatus Status { get; private set; }
-    
-    private Resource(Guid id,string resourceName, EntityStatus status)
-    {
-        ResourceName = resourceName;
-        Status = status;
-        ID = id;
-    }
-    public static Resource Create(Guid id,string resourceName, EntityStatus status)
+
+    private Resource(string resourceName)
     {
         if (string.IsNullOrWhiteSpace(resourceName))
             throw new ArgumentException("Resource name cannot be null or empty.", nameof(resourceName));
-        if (id == Guid.Empty)
-            throw new ArgumentException("ID cannot be an empty Guid.", nameof(id));
         
-        return new Resource(id,resourceName, status);
+        ResourceName = resourceName;
+        ID = Guid.NewGuid();
+    }
+
+    public static Resource Create(string resourceName)
+    {
+        return new Resource(resourceName);
+    }
+    
+    public static Resource Update(string resourceName)
+    {
+        return new Resource(resourceName);
     }
 
     public Result Archive()
     {
         Status = EntityStatus.Archived;
+        return Result.Success();
+    }
+    
+    public Result Active()
+    {
+        Status = EntityStatus.Active;
         return Result.Success();
     }
 

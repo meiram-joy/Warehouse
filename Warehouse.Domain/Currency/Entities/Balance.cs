@@ -26,6 +26,5 @@ public sealed class Balance : Entity
         return Result.Success(new Balance(resourceId, unitOfMeasurementId, quantity));
     }
 
-    public void Increase(Quantity qty) => Quantity += qty;
-    public void Decrease(Quantity qty) => Quantity -= qty;
+   
 }
