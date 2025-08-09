@@ -18,9 +18,13 @@ public class CreateClientHandler : IRequestHandler<CreateClientCommand, Result<C
     }
     public async Task<Result<ClientOutputDto>> Handle(CreateClientCommand request, CancellationToken cancellationToken)
     {
-        var existingClient = await _clientRepository.GetByNameAndAddressAsync(request.Client.Name,request.Client.Address,cancellationToken);
-        if (existingClient != null)
-            return Result.Failure<ClientOutputDto>("Клиент с таким именем уже существует.");
+        var (existingClient,nameExists) = await _clientRepository.GetForCreateCheckAsync(request.Client.Name,request.Client.Address,cancellationToken);
+        
+        if (existingClient == null)
+            return Result.Failure<ClientOutputDto>("Клиент не найден");
+
+        if (nameExists)
+            return Result.Failure<ClientOutputDto>("В системе уже зарегистрирован клиент с таким наименованием");
         
         var client = Domain.Currency.Entities.Client.Create(request.Client.Name, request.Client.Address);
         client.Active();

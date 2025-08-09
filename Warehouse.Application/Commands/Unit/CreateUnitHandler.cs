@@ -19,8 +19,11 @@ public class CreateUnitHandler : IRequestHandler<CreateUnitCommand,Result<UnitOf
 
     public async Task<Result<UnitOfMeasurementOutputDto>> Handle(CreateUnitCommand request, CancellationToken cancellationToken)
     {
-        var existingUnit = await _unitRepository.GetByNameAsync(request.Unit.Name);
-        if (existingUnit != null)
+        var (existingUnit, nameExists) = await _unitRepository.GetForCreateCheckAsync(request.Unit.Name, cancellationToken);
+        
+        if (nameExists)
+            return Result.Failure<UnitOfMeasurementOutputDto>("В системе уже зарегистрирован Еденица измерения с таким наименованием");
+        if (existingUnit == null)
             return Result.Failure<UnitOfMeasurementOutputDto>("Еденица с таким именем уже существует.");
         
         var unit = Domain.Currency.Entities.UnitOfMeasurement.Create(request.Unit.Name);

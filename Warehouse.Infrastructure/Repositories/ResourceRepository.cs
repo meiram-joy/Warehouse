@@ -38,6 +38,35 @@ public class ResourceRepository : IResourceRepository
         return resource;
     }
 
+    public async Task<(Resource? existingResource, bool nameExists)> GetForCreateCheckAsync(string resourceName, CancellationToken cancellationToken = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+
+        var sql = @"
+        SELECT * 
+        FROM Resource 
+        WHERE ResourceName = @ResourceName;
+
+        SELECT CASE WHEN EXISTS (
+            SELECT 1 
+            FROM Resource 
+            WHERE ResourceName = @ResourceName
+        )
+        THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END;
+    ";
+
+        using var multi = await connection.QueryMultipleAsync(sql, new
+        {
+            ResourceName = resourceName
+        });
+
+        var existingResource = await multi.ReadSingleOrDefaultAsync<Resource>();
+        var nameExists = await multi.ReadSingleAsync<bool>();
+
+        return (existingResource, nameExists);
+    }
+
     public async Task<IEnumerable<Resource>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();

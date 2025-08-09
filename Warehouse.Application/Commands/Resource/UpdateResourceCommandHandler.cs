@@ -15,10 +15,13 @@ public class UpdateResourceCommandHandler : IRequestHandler<UpdateResourceComman
 
     public async Task<Result<string>> Handle(UpdateResourceCommand request, CancellationToken cancellationToken)
     {
-        var existingClient = await _resourceRepository.GetByNameAsync(request.Resource.ResourceName,cancellationToken);
+        var (existingResource, nameExists) = await _resourceRepository.GetForCreateCheckAsync(request.Resource.ResourceName, cancellationToken);
         
-        if (existingClient != null)
-            return Result.Failure<string>("Ресурс с таким именем уже существует.");
+        if (existingResource == null)
+            return Result.Failure<string>("Ресурс не найден");
+
+        if (nameExists)
+            return Result.Failure<string>("В системе уже зарегистрирован ресурс с таким наименованием");
         
         var resourceUpdate = Domain.Currency.Entities.Resource.Update(request.Resource.ResourceName);
         resourceUpdate.Active();

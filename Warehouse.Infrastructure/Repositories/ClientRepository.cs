@@ -26,6 +26,35 @@ public class ClientRepository : IClientRepository
         return client;
     }
 
+    public async Task<(Client? clientToCreate, bool nameExists)> GetForCreateCheckAsync(string name, string address, CancellationToken cancellationToken)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+
+        var sql = @"
+        SELECT * 
+        FROM Client 
+        WHERE ClientName = @ClientName AND Address = @Address;
+        SELECT CASE WHEN EXISTS (
+            SELECT 1 
+            FROM Client 
+            WHERE ClientName = @ClientName
+        ) 
+        THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END;
+    ";
+
+        using var multi = await connection.QueryMultipleAsync(sql, new
+        {
+            ClientName = name,
+            Address = address
+        });
+
+        var existingClient = await multi.ReadSingleOrDefaultAsync<Client>();
+        var nameExists = await multi.ReadSingleAsync<bool>();
+
+        return (existingClient, nameExists);
+    }
+
     public async Task<Client?> GetByIdAsync(Guid Id, CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();

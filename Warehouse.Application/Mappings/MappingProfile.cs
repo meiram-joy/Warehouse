@@ -10,7 +10,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<InboundDocument, InboundDocumentOutputDto>()
-            .ForMember(dest => dest.Items, opt => opt.Ignore()); 
+            .ForMember(dest => dest.Resources, opt => opt.Ignore()); 
         CreateMap<InboundResource, InboundResourceOutputDto>();
     }
 

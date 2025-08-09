@@ -1,6 +1,6 @@
-﻿namespace Warehouse.Application.Queries.InboundDocument;
+﻿using MediatR;
+using Warehouse.Application.DTOs;
 
-public class GetByIdInboundDocumentQuery
-{
-    
-}
+namespace Warehouse.Application.Queries.InboundDocument;
+
+public record class GetByIdInboundDocumentQuery(Guid InboundDocumentId) : IRequest<IReadOnlyList<InboundDocumentOutputDto>>;

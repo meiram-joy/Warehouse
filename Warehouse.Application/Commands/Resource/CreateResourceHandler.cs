@@ -19,9 +19,13 @@ public class CreateResourceHandler : IRequestHandler<CreateResourceCommand, Resu
 
     public async Task<Result<ResourceOutputDto>> Handle(CreateResourceCommand request, CancellationToken cancellationToken)
     {
-        var existingResource = await _resourceRepository.GetByNameAsync(request.Resource.ResourceName);
-        if (existingResource != null)
-            return Result.Failure<ResourceOutputDto>("Ресурс с таким именем уже существует.");
+        var (existingResource, nameExists) = await _resourceRepository.GetForCreateCheckAsync(request.Resource.ResourceName, cancellationToken);
+        
+        if (existingResource == null)
+            return Result.Failure<ResourceOutputDto>("Ресурс не найден");
+
+        if (nameExists)
+            return Result.Failure<ResourceOutputDto>("В системе уже зарегистрирован ресурс с таким наименованием");
         
         var resource = Domain.Currency.Entities.Resource.Create(request.Resource.ResourceName);
         resource.Active();

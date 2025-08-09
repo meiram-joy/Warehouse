@@ -37,6 +37,34 @@ public class MeasurementUnitRepository : IMeasurementUnitRepository
         
         return unit;
     }
+    public async Task<(UnitOfMeasurement? existingUnit, bool nameExists)> GetForCreateCheckAsync(string unitName, CancellationToken cancellationToken = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+
+        var sql = @"
+        SELECT * 
+        FROM UnitOfMeasurement 
+        WHERE UnitName = @UnitName;
+
+        SELECT CASE WHEN EXISTS (
+            SELECT 1 
+            FROM UnitOfMeasurement 
+            WHERE UnitName = @UnitName
+        )
+        THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END;
+    ";
+
+        using var multi = await connection.QueryMultipleAsync(sql, new
+        {
+            UnitName = unitName
+        });
+
+        var existingUnit = await multi.ReadSingleOrDefaultAsync<UnitOfMeasurement>();
+        var nameExists = await multi.ReadSingleAsync<bool>();
+
+        return (existingUnit, nameExists);
+    }
 
     public async Task<IEnumerable<UnitOfMeasurement>> GetAllAsync(CancellationToken cancellationToken = default)
     {

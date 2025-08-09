@@ -31,7 +31,7 @@ public class GetInboundDocumentQueryHandler : IRequestHandler<GetInboundDocument
                 .Where(r => r.DocumentId == docDto.Id)
                 .ToList();
 
-            docDto.Items = _mapper.Map<List<InboundResourceOutputDto>>(relatedResources);
+            docDto.Resources = _mapper.Map<List<InboundResourceOutputDto>>(relatedResources);
         }
 
         return documentDtos;

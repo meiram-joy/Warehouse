@@ -16,9 +16,11 @@ public class UpdateUnitCommandHandler : IRequestHandler<UpdateUnitCommand, Resul
 
     public async Task<Result<string>> Handle(UpdateUnitCommand request, CancellationToken cancellationToken)
     {
-        var existingUnit = await _unitRepository.GetByNameAsync(request.Unit.Name,cancellationToken);
+        var (existingUnit, nameExists) = await _unitRepository.GetForCreateCheckAsync(request.Unit.Name, cancellationToken);
         
-        if (existingUnit != null)
+        if (nameExists)
+            return Result.Failure<string>("В системе уже зарегистрирован Еденица измерения с таким наименованием");
+        if (existingUnit == null)
             return Result.Failure<string>("Еденица с таким именем уже существует.");
         
         var unitUpdate = Domain.Currency.Entities.UnitOfMeasurement.Update(request.Unit.Name);

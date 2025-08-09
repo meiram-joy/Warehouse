@@ -19,7 +19,7 @@ public class DeleteInboundDocumentCommandHandler : IRequestHandler<DeleteInbound
 
     public async Task<Result<string>> Handle(DeleteInboundDocumentCommand request, CancellationToken cancellationToken)
     {
-        if (request.InboundDocumentId != null)
+        if (request.InboundDocumentId == Guid.Empty)
             throw new ArgumentNullException(nameof(request.InboundDocumentId));
         
         var existingDocument  = await _inboundDocumentRepository.GetByIdAsync(request.InboundDocumentId,cancellationToken);
@@ -27,20 +27,23 @@ public class DeleteInboundDocumentCommandHandler : IRequestHandler<DeleteInbound
             return Result.Failure<string>("Документ поступления не найден");
         
         var inboundResources = await _inboundResourceRepository.GetByInboundDocumentIdAsync(request.InboundDocumentId,cancellationToken);
-        if (inboundResources == null)
+        if (inboundResources == null || !inboundResources.Any())
             return Result.Failure<string>("Ресурсы поступления не найдены");
         
-        var balance = await _balanceRepository.GetByResourceIdAndUnitIdAsync(inboundResources!.ID,inboundResources.UnitOfMeasurementId, cancellationToken);
-        if (balance == null)
-            return Result.Failure<string>("Баланс не найден");
+        foreach (var resource in inboundResources)
+        {
+            var balance = await _balanceRepository.GetByResourceIdAndUnitIdAsync(resource.ID,resource.UnitOfMeasurementId, cancellationToken);
+            if (balance == null)
+                return Result.Failure<string>("Баланс не найден");
         
-        var result =  existingDocument!.RemoveItem(inboundResources!.ID);
-        if (result.IsFailure)
-            return Result.Failure<string>(result.Error);
-        
+            var result =  existingDocument!.RemoveItem(resource.ID);
+            if (result.IsFailure)
+                return Result.Failure<string>(result.Error);
+            
+            await _inboundResourceRepository.DeleteAsync(resource.ID, cancellationToken);
+            await _balanceRepository.DeleteAsync(balance.ID, cancellationToken);
+        }
         await _inboundDocumentRepository.DeleteAsync(existingDocument.ID, cancellationToken);
-        await _inboundResourceRepository.DeleteAsync(inboundResources.ID, cancellationToken);
-        await _balanceRepository.DeleteAsync(balance.ID, cancellationToken);
         
         return Result.Success("Документ поступления успешно удалён");
     }
