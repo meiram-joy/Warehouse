@@ -31,19 +31,19 @@ public class CreateInboundDocumentCommandHandler : IRequestHandler<CreateInbound
 
         foreach (var item in request.InboundDocument.Items)
         {
-            var addItemResult  =  existingDocument .AddItem(item.ResourceId,item.UnitOfMeasurementId,item.Quantity);
+            var addItemResult  =  existingDocument.AddItem(item.ResourceId,item.UnitOfMeasurementId,item.Quantity,inboundDocument.Value.ID);
             if (addItemResult .IsFailure)
                 return Result.Failure<InboundDocumentOutputDto>(addItemResult .Error);
         }
-        await _inboundDocumentRepository.AddAsync(inboundDocument,cancellationToken);
+        await _inboundDocumentRepository.AddAsync(inboundDocument.Value,cancellationToken);
         
-        foreach (var item in inboundDocument.Items)
+        foreach (var item in inboundDocument.Value.Items)
         {
-            var balance = Domain.Currency.Entities.Balance.Create(item.ResourceId,item.UnitOfMeasurementId,item.Quantity);
+            var balance = Domain.Currency.Entities.Balance.Create(item.ID,item.UnitOfMeasurementId,item.Quantity);
             if (balance.IsFailure)
                 return Result.Failure<InboundDocumentOutputDto>(balance.Error);
             
-            await _inboundResourceRepository.AddAsync(inboundDocument.ID, item, cancellationToken);
+            await _inboundResourceRepository.AddAsync(inboundDocument.Value.ID, item, cancellationToken);
             await _balanceRepository.AddAsync(balance.Value, cancellationToken);
         }
         

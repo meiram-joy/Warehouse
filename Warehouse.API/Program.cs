@@ -1,6 +1,6 @@
+using Warehouse.Application;
 using Warehouse.Domain.Currency.Interfaces;
 using Warehouse.Infrastructure;
-using Warehouse.Infrastructure.Mappings;
 using Warehouse.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +11,8 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication(builder.Configuration);
+builder.Services.AddAutoMapper(typeof(Program));
 
 var app = builder.Build();
 

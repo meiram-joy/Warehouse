@@ -19,7 +19,7 @@ public class DeleteInboundDocumentCommandHandler : IRequestHandler<DeleteInbound
 
     public async Task<Result<string>> Handle(DeleteInboundDocumentCommand request, CancellationToken cancellationToken)
     {
-        if (request.InboundDocumentId == null)
+        if (request.InboundDocumentId != null)
             throw new ArgumentNullException(nameof(request.InboundDocumentId));
         
         var existingDocument  = await _inboundDocumentRepository.GetByIdAsync(request.InboundDocumentId,cancellationToken);
@@ -30,7 +30,7 @@ public class DeleteInboundDocumentCommandHandler : IRequestHandler<DeleteInbound
         if (inboundResources == null)
             return Result.Failure<string>("Ресурсы поступления не найдены");
         
-        var balance = await _balanceRepository.GetByResourceIdAndUnitIdAsync(inboundResources!.ResourceId,inboundResources.UnitOfMeasurementId, cancellationToken);
+        var balance = await _balanceRepository.GetByResourceIdAndUnitIdAsync(inboundResources!.ID,inboundResources.UnitOfMeasurementId, cancellationToken);
         if (balance == null)
             return Result.Failure<string>("Баланс не найден");
         

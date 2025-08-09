@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Warehouse.Domain.Currency.Interfaces;
-using Warehouse.Infrastructure.Mappings;
 using Warehouse.Infrastructure.Repositories;
 
 namespace Warehouse.Infrastructure;
@@ -19,6 +18,7 @@ public static class DependencyInjection
         services.AddScoped<IOutboundResourceRepository, OutboundResourceRepository>();
         services.AddScoped<IOutboundDocumentRepository, OutboundDocumentRepository>();
         services.AddSingleton<IDbConnectionFactory, SqliteDbConnectionFactory>();
+        
         
         return services;
     }

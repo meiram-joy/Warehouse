@@ -38,14 +38,14 @@ public class InboundDocumentRepository : IInboundDocumentRepository
         return document;
     }
 
-    public async Task<IEnumerable<InboundDocument>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<InboundDocument>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
         await connection.OpenAsync(cancellationToken);
         
         const string sql = @"SELECT * FROM InboundDocument";
         var document = await connection.QueryAsync<InboundDocument>(sql);
-        return document;
+        return document.Select(d => InboundDocument.Create(d.InboundDocumentNumber,d.Date).Value).ToList();
     }
 
     public async Task AddAsync(InboundDocument document, CancellationToken cancellationToken = default)

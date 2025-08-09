@@ -22,13 +22,13 @@ public class InboundDocument : AggregateRoot
         InboundDocumentNumber = inboundDocumentNumber;
         Date = date;
     }
-    public static InboundDocument Create(string inboundDocumentNumber, DateTime date)
+    public static Result<InboundDocument> Create(string inboundDocumentNumber, DateTime date)
     {
-        return  new InboundDocument(inboundDocumentNumber, date);
+        return  Result.Success(new InboundDocument(inboundDocumentNumber, date));
     }
-    public  Result  AddItem(Guid resourceId, Guid unitId, Quantity quantity)
+    public  Result  AddItem(Guid resourceId, Guid unitId, Quantity quantity, Guid documentId)
     {
-        _items.Add(new InboundResource(resourceId, unitId, quantity));
+        _items.Add(new InboundResource(resourceId, unitId, quantity, documentId));
         return Result.Success("Item added successfully");
     }
     public Result RemoveItem(Guid resourceId)

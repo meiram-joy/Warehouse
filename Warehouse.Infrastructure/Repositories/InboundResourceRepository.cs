@@ -26,14 +26,14 @@ public class InboundResourceRepository : IInboundResourceRepository
         return inboundResource;
     }
 
-    public async Task<IEnumerable<InboundResource>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<InboundResource>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
         await connection.OpenAsync(cancellationToken);
         
         const string sql = @"SELECT * FROM InboundResource";
         var inboundResource = await connection.QueryAsync<InboundResource>(sql);
-        return inboundResource;
+        return inboundResource.Select(r => InboundResource.Create(r.ID, r.UnitOfMeasurementId, r.Quantity,r.DocumentId).Value).ToList();
     }
 
     public async Task AddAsync(Guid inboundDocumentId,InboundResource resource, CancellationToken cancellationToken = default)
@@ -47,7 +47,7 @@ public class InboundResourceRepository : IInboundResourceRepository
         {
             Id = resource.ID,
             InboundDocumentId = inboundDocumentId,
-            ResourceId = resource.ResourceId,
+            ResourceId = resource.ID,
             UnitOfMeasurementId = resource.UnitOfMeasurementId,
             Quantity = resource.Quantity
         });
@@ -65,7 +65,7 @@ public class InboundResourceRepository : IInboundResourceRepository
         {
             Id = resource.ID,
             InboundDocumentId = inboundDocumentId,
-            ResourceId = resource.ResourceId,
+            ResourceId = resource.ID,
             UnitOfMeasurementId = resource.UnitOfMeasurementId,
             Quantity = resource.Quantity
         });
