@@ -23,9 +23,12 @@ public sealed class Resource : Entity
         return new Resource(resourceName);
     }
     
-    public static Resource Update(string resourceName)
+    public Result Update(string resourceName)
     {
-        return new Resource(resourceName);
+        if (string.IsNullOrWhiteSpace(resourceName))
+            return Result.Failure("Имя ресурса не может быть пустым");
+        ResourceName = resourceName;
+        return Result.Success();
     }
 
     public Result Archive()

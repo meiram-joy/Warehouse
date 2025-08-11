@@ -22,9 +22,12 @@ public sealed class UnitOfMeasurement : Entity
         return new UnitOfMeasurement(unitName);
     }
     
-    public static UnitOfMeasurement Update(string unitName)
+    public Result Update(string unitName)
     {
-        return new UnitOfMeasurement(unitName);
+        if (string.IsNullOrWhiteSpace(unitName))
+            return Result.Failure("Еденица не может быть пустой");
+        UnitName = unitName;
+        return Result.Success();
     }
     
     public Result Archive()

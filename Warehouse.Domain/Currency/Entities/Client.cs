@@ -13,9 +13,9 @@ public sealed class Client : Entity
     private Client(string clientName,string address)
     {
         if (string.IsNullOrWhiteSpace(clientName))
-            throw new ArgumentException("Resource name cannot be null or empty.", nameof(clientName));
+            throw new ArgumentException("Название клиента не может быть пустым", nameof(clientName));
         if (string.IsNullOrWhiteSpace(address))
-            throw new ArgumentException("Address cannot be null or empty.", nameof(address));
+            throw new ArgumentException("Адрес клиента не может быть пустым", nameof(address));
         
         ID = Guid.NewGuid();
         ClientName = clientName;
@@ -26,9 +26,15 @@ public sealed class Client : Entity
         return new Client(clientName, address);
     }
     
-    public static Client Update(string clientName,string address)
+    public Result Update(string clientName,string address)
     {
-        return new Client(clientName, address);
+        if (string.IsNullOrWhiteSpace(clientName))
+           return Result.Failure("Название клиента не может быть пустым");
+        if (string.IsNullOrWhiteSpace(address))
+            return Result.Failure("Адрес клиента не может быть пустым");
+        ClientName = clientName;
+        Address = address;
+        return Result.Success();
     }
     public Result Archive()
     {

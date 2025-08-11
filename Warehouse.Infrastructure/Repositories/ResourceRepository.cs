@@ -38,7 +38,29 @@ public class ResourceRepository : IResourceRepository
         return resource;
     }
 
-    public async Task<(Resource? existingResource, bool nameExists)> GetForCreateCheckAsync(string resourceName, CancellationToken cancellationToken = default)
+    public async Task<bool> CheckForCreateAsync(string resourceName, CancellationToken cancellationToken = default)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+
+        const string sql = @"
+        SELECT CASE WHEN EXISTS (
+            SELECT 1 
+            FROM Resource 
+            WHERE ResourceName = @ResourceName
+        )
+        THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END;
+    ";
+
+        var nameExists = await connection.ExecuteScalarAsync<bool>(sql, new
+        {
+            ResourceName = resourceName
+        });
+
+        return nameExists;
+    }
+
+    public async Task<(Resource? existingResource, bool nameExists)> GetForUpdateCheckAsync(string resourceName, CancellationToken cancellationToken = default)
     {
         using var connection = _connectionFactory.CreateConnection();
         await connection.OpenAsync(cancellationToken);
