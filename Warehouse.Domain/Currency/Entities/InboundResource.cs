@@ -33,4 +33,18 @@ public sealed class InboundResource : Entity
     {
         return Result.Success(new InboundResource(resourceId, unitOfMeasurementId, quantity, documentId));
     }
+    public  Result Update(Guid resourceId, Guid unitOfMeasurementId, Quantity quantity)
+    {
+        if (resourceId == Guid.Empty)
+            throw new ArgumentException("Resource ID cannot be empty.");
+        if (unitOfMeasurementId == Guid.Empty)
+            throw new ArgumentException("Unit of Measurement ID cannot be empty.");
+        if (quantity == null)
+            throw new ArgumentException("Inventory Balance cannot be null.");
+        ID = resourceId;
+        UnitOfMeasurementId = unitOfMeasurementId;
+        Quantity = quantity;
+        
+        return Result.Success();
+    }
 }

@@ -87,6 +87,28 @@ public class InboundDocumentRepository : IInboundDocumentRepository
         const string sql = @"DELETE FROM InboundDocument WHERE Id = @Id";
         await connection.ExecuteAsync(sql, new { Id = id });
     }
+
+    public async Task<(InboundDocument? documentToUpdate, bool numberExists)> GetForUpdateCheckAsync(Guid id, string documentNumber, CancellationToken cancellationToken)
+    {
+        using var connection = _connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        
+        var sql = @"
+        SELECT * FROM InboundDocuments WHERE Id = @Id;
+        SELECT CASE WHEN EXISTS (
+            SELECT 1 FROM InboundDocuments 
+            WHERE InboundDocumentNumber = @InboundDocumentNumber AND Id <> @Id
+        ) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END;
+        ";
+
+        using var multi = await connection.QueryMultipleAsync(sql, new { Id = id, InboundDocumentNumber = documentNumber });
+
+        var documentToUpdate = await multi.ReadSingleOrDefaultAsync<InboundDocument>();
+        var numberExists = await multi.ReadSingleAsync<bool>();
+
+        return (documentToUpdate, numberExists);
+    }
+
     private void EnsureTableCreated()
     {
         using var connection = _connectionFactory.CreateConnection(); //Todo Исправить ID должны быть Text

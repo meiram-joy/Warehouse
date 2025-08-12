@@ -10,4 +10,6 @@ public interface IInboundDocumentRepository
     Task AddAsync(InboundDocument document,CancellationToken cancellationToken = default);
     Task UpdateAsync(InboundDocument document,CancellationToken cancellationToken = default);
     Task DeleteAsync(Guid id,CancellationToken cancellationToken = default);
+    Task<(InboundDocument? documentToUpdate, bool numberExists)> GetForUpdateCheckAsync(Guid id, string documentNumber, CancellationToken cancellationToken);
+
 }

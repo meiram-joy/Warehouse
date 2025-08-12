@@ -26,6 +26,17 @@ public class InboundDocument : AggregateRoot
     {
         return  Result.Success(new InboundDocument(inboundDocumentNumber, date));
     }
+    public Result  Update(Guid inboundDocumentId,string inboundDocumentNumber, DateTime date)
+    {
+        if (string.IsNullOrWhiteSpace(inboundDocumentNumber))
+            return Result.Failure<InboundDocument>("Документ поступления не может быть null");
+        
+        InboundDocumentNumber = inboundDocumentNumber;
+        Date = date;
+        ID = inboundDocumentId;
+        
+        return Result.Success();
+    }
     public  Result  AddItem(Guid resourceId, Guid unitId, Quantity quantity, Guid documentId)
     {
         _items.Add(new InboundResource(resourceId, unitId, quantity, documentId));
@@ -37,12 +48,16 @@ public class InboundDocument : AggregateRoot
         if (item != null) _items.Remove(item);
         return Result.Success("Item removed successfully");
     }
-    public Result UpdateItem(Guid itemId, Balance newQty)
+    public Result UpdateInboundResource(Guid resourceId,Guid unitOfMeasurementId,Quantity quantity)
     {
-        // var item = _items.FirstOrDefault(x => x.ID == itemId)
-        //            ?? throw new InvalidOperationException("Item not found");
-        // item.UpdatenewInventoryBalance(newQty);
-        // return Result.Success("Item updated successfully");
-        return Result.Success("Item updated successfully");
+        var item = _items.FirstOrDefault(x => x.ID == resourceId);
+        if (item is null)
+            return Result.Failure("Ресурс не найден в документе");
+
+        var updateResult = item.Update(resourceId,unitOfMeasurementId, quantity);
+        if (updateResult.IsFailure)
+            return updateResult;
+
+        return Result.Success("Ресурс успешно обновлён");
     }
 }

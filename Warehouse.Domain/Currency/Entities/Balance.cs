@@ -27,5 +27,15 @@ public sealed class Balance : Entity
         return Result.Success(new Balance(resourceId, unitOfMeasurementId, quantity));
     }
 
-   
+    public Result Update(Guid resourceId, Guid unitOfMeasurementId, Quantity newQuantity)
+    {
+        if (newQuantity == null)
+            return Result.Failure("Количество не может быть пустым");
+        
+        ResourceId = resourceId;
+        UnitOfMeasurementId = unitOfMeasurementId;
+        Quantity = newQuantity;
+        
+        return Result.Success("Баланс успешно обновлен");
+    }
 }

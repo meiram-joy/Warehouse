@@ -1,6 +1,6 @@
 ﻿namespace Warehouse.Application.DTOs;
 
-public record InboundDocumentInputDto(string DocumentNumber, DateTime Date, List<InboundResourceInputDto> Items);
+public record InboundDocumentInputDto(Guid Id,string DocumentNumber, DateTime Date, List<InboundResourceInputDto> Items);
 public class InboundDocumentOutputDto
 {
     public Guid Id {get; set;}
